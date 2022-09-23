@@ -17,7 +17,7 @@ const (
 	defaultUserAgent = "github.com/dillonstreator/request/" + version
 
 	authTypeBasic authType = iota
-	authTypeBearer
+	authTypeToken
 )
 
 type HTTPError struct {
@@ -43,13 +43,13 @@ func defaultErrChecker(req *http.Request, res *http.Response) error {
 }
 
 type client struct {
-	httpClient  *http.Client
-	userAgent   string
-	baseURL     string
-	bearerToken string
-	basicUser   string
-	basicPass   string
-	authType    authType
+	httpClient *http.Client
+	userAgent  string
+	baseURL    string
+	token      string
+	basicUser  string
+	basicPass  string
+	authType   authType
 
 	errChecker HTTPErrChecker
 }
@@ -94,8 +94,8 @@ func (c *client) Request(ctx context.Context, method, path string, body io.Reade
 	switch c.authType {
 	case authTypeBasic:
 		req.SetBasicAuth(c.basicUser, c.basicPass)
-	case authTypeBearer:
-		req.Header.Set("Authorization", "Bearer "+c.bearerToken)
+	case authTypeToken:
+		req.Header.Set("Authorization", c.token)
 	}
 
 	res, err := c.httpClient.Do(req)

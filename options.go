@@ -16,10 +16,10 @@ func WithHTTPClient(httpClient *http.Client) option {
 	}
 }
 
-func WithBearerToken(bearerToken string) option {
+func WithToken(token string) option {
 	return func(c *client) {
-		c.bearerToken = bearerToken
-		c.authType = authTypeBearer
+		c.token = token
+		c.authType = authTypeToken
 	}
 }
 
