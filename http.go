@@ -90,6 +90,7 @@ func (c *client) Request(ctx context.Context, method, path string, body io.Reade
 	}
 
 	req.Header.Add("User-Agent", c.userAgent)
+	req.Header.Add("Content-Type", "application/json")
 
 	switch c.authType {
 	case authTypeBasic:
