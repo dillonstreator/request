@@ -48,11 +48,30 @@ client := request.NewClient(
 ### Custom error handling
 
 ```go
+type CustomError struct {
+	Detail string `json:"detail"`
+}
+
+func (c *CustomError) Error() string {
+	return fmt.Sprintf("custom error details: %s", c.Detail)
+}
+
 client := request.NewClient(
     "https://jsonplaceholder.typicode.com/todos",
     request.WithErrChecker(func(req *http.Request, res *http.Response) error {
         if res.StatusCode != http.StatusOK { // your custom error handling here...
-            return fmt.Errorf("some error occurred %d %s%s", res.StatusCode, req.URL.Host, req.URL.Path)
+            b, err := io.ReadAll(res.Body)
+            if err != nil {
+                return err
+            }
+
+            custErr := &CustomError{}
+            err = json.Unmarshal(b, custErr)
+            if err != nil {
+                return err
+            }
+
+            return custErr
         }
 
         return nil
@@ -64,7 +83,9 @@ items := []struct {
 }{}
 _, err := client.Get(context.Background(), "/", nil, &items)
 if err != nil {
-    log.Fatal(err)
+    if custErr, ok := err.(*CustomError); ok {
+        log.Fatal(custErr.Detail)
+    }
 }
 
 fmt.Println(items)
@@ -91,7 +112,7 @@ client = request.NewClient(
 
 ```go
 client := request.NewClient(
-    "https://some-basic-token-authed-api.com",
+    "https://some-basic-authed-api.com",
     request.WithBasicAuth("user", "pass"),
 )
 ```
