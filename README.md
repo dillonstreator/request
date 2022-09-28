@@ -1,6 +1,6 @@
 # request
 
-http request library for json apis
+go request library for http apis
 
 ## Installation
 

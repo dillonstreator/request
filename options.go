@@ -10,6 +10,13 @@ func WithUserAgent(userAgent string) option {
 	}
 }
 
+// WithContentType the content type of the request body
+func WithContentType(contentType string) option {
+	return func(c *client) {
+		c.contentType = contentType
+	}
+}
+
 func WithHTTPClient(httpClient *http.Client) option {
 	return func(c *client) {
 		c.httpClient = httpClient
@@ -34,5 +41,11 @@ func WithBasicAuth(user, pass string) option {
 func WithErrChecker(errChecker HTTPErrChecker) option {
 	return func(c *client) {
 		c.errChecker = errChecker
+	}
+}
+
+func WithResponseUnmarshaler(responseUnmarshaler ResponseUnmarshaler) option {
+	return func(c *client) {
+		c.responseUnmarshaler = responseUnmarshaler
 	}
 }

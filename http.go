@@ -42,25 +42,30 @@ func defaultErrChecker(req *http.Request, res *http.Response) error {
 	return nil
 }
 
-type client struct {
-	httpClient *http.Client
-	userAgent  string
-	baseURL    string
-	token      string
-	basicUser  string
-	basicPass  string
-	authType   authType
+type ResponseUnmarshaler func(bytes []byte, out any) error
 
-	errChecker HTTPErrChecker
+type client struct {
+	httpClient  *http.Client
+	userAgent   string
+	contentType string
+	baseURL     string
+	token       string
+	basicUser   string
+	basicPass   string
+	authType    authType
+
+	errChecker          HTTPErrChecker
+	responseUnmarshaler ResponseUnmarshaler
 }
 
 var _ Client = (*client)(nil)
 
 func NewClient(baseURL string, options ...option) *client {
 	c := &client{
-		httpClient: &http.Client{},
-		userAgent:  defaultUserAgent,
-		baseURL:    strings.TrimSuffix(baseURL, "/"),
+		httpClient:  &http.Client{},
+		userAgent:   defaultUserAgent,
+		contentType: "application/json",
+		baseURL:     strings.TrimSuffix(baseURL, "/"),
 	}
 
 	for _, o := range options {
@@ -69,6 +74,10 @@ func NewClient(baseURL string, options ...option) *client {
 
 	if c.errChecker == nil {
 		c.errChecker = defaultErrChecker
+	}
+
+	if c.responseUnmarshaler == nil {
+		c.responseUnmarshaler = json.Unmarshal
 	}
 
 	return c
@@ -90,7 +99,7 @@ func (c *client) Request(ctx context.Context, method, path string, body io.Reade
 	}
 
 	req.Header.Add("User-Agent", c.userAgent)
-	req.Header.Add("Content-Type", "application/json")
+	req.Header.Add("Content-Type", c.contentType)
 
 	switch c.authType {
 	case authTypeBasic:
@@ -117,7 +126,7 @@ func (c *client) Request(ctx context.Context, method, path string, body io.Reade
 	}
 
 	if out != nil {
-		err = json.Unmarshal(resBody, out)
+		err = c.responseUnmarshaler(resBody, out)
 		if err != nil {
 			return res, fmt.Errorf("unmarshaling response body: %w", err)
 		}
