@@ -23,7 +23,7 @@ func WithHTTPClient(httpClient *http.Client) option {
 	}
 }
 
-func WithToken(token string) option {
+func WithTokenAuth(token string) option {
 	return func(c *client) {
 		c.token = token
 		c.authType = authTypeToken

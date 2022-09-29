@@ -83,7 +83,7 @@ func NewClient(baseURL string, options ...option) *client {
 	return c
 }
 
-func (c *client) Request(ctx context.Context, method, path string, body io.Reader, headers http.Header, out interface{}) (*http.Response, error) {
+func (c *client) Request(ctx context.Context, method, path string, body io.Reader, headers http.Header, out any) (*http.Response, error) {
 	if !strings.HasPrefix(path, "/") {
 		path = fmt.Sprintf("/%s", path)
 	}
