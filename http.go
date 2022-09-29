@@ -14,7 +14,7 @@ import (
 type authType int8
 
 const (
-	defaultUserAgent = "github.com/dillonstreator/request/" + version
+	defaultUserAgent = "github.com/dillonstreator/request@v" + version
 
 	authTypeBasic authType = iota
 	authTypeToken
