@@ -113,19 +113,19 @@ func (c *client) Request(ctx context.Context, method, path string, headers http.
 		return res, err
 	}
 
-	resBody, err := io.ReadAll(res.Body)
-	if err != nil {
-		return res, err
-	}
-	res.Body.Close()
-
-	res.Body = io.NopCloser(bytes.NewBuffer(resBody))
-
 	if err := c.errChecker(req, res); err != nil {
 		return res, err
 	}
 
 	if out != nil {
+		resBody, err := io.ReadAll(res.Body)
+		if err != nil {
+			return res, err
+		}
+		res.Body.Close()
+
+		res.Body = io.NopCloser(bytes.NewBuffer(resBody))
+
 		err = c.responseUnmarshaler(resBody, out)
 		if err != nil {
 			return res, fmt.Errorf("unmarshaling response body: %w", err)
