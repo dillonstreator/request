@@ -23,7 +23,9 @@ todos := []struct {
 values := url.Values{}
 values.Add("userId", "2")
 
-res, err := client.Get(context.Background(), "/", values, &todos)
+headers := http.Header{}
+
+res, err := client.Get(context.Background(), "/", headers, values, &todos)
 if err != nil {
     log.Fatal(err)
 }
@@ -81,7 +83,7 @@ client := request.NewClient(
 items := []struct {
     // ...
 }{}
-_, err := client.Get(context.Background(), "/", nil, &items)
+_, err := client.Get(context.Background(), "/", nil, nil, &items)
 if err != nil {
     if custErr, ok := err.(*CustomError); ok {
         log.Fatal(custErr.Detail)

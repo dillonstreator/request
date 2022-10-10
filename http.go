@@ -83,7 +83,7 @@ func NewClient(baseURL string, options ...option) *client {
 	return c
 }
 
-func (c *client) Request(ctx context.Context, method, path string, body io.Reader, headers http.Header, out any) (*http.Response, error) {
+func (c *client) Request(ctx context.Context, method, path string, headers http.Header, body io.Reader, out any) (*http.Response, error) {
 	if !strings.HasPrefix(path, "/") {
 		path = fmt.Sprintf("/%s", path)
 	}
@@ -135,7 +135,7 @@ func (c *client) Request(ctx context.Context, method, path string, body io.Reade
 	return res, nil
 }
 
-func (c *client) Get(ctx context.Context, path string, query url.Values, out interface{}) (*http.Response, error) {
+func (c *client) Get(ctx context.Context, path string, headers http.Header, query url.Values, out interface{}) (*http.Response, error) {
 	if len(query) > 0 {
 		path = fmt.Sprintf("%s?%s", path, query.Encode())
 	}
@@ -143,18 +143,18 @@ func (c *client) Get(ctx context.Context, path string, query url.Values, out int
 	return c.Request(ctx, http.MethodGet, path, nil, nil, out)
 }
 
-func (c *client) Post(ctx context.Context, path string, body io.Reader, out interface{}) (*http.Response, error) {
-	return c.Request(ctx, http.MethodPost, path, body, nil, out)
+func (c *client) Post(ctx context.Context, path string, headers http.Header, body io.Reader, out interface{}) (*http.Response, error) {
+	return c.Request(ctx, http.MethodPost, path, headers, body, out)
 }
 
-func (c *client) Put(ctx context.Context, path string, body io.Reader, out interface{}) (*http.Response, error) {
-	return c.Request(ctx, http.MethodPut, path, body, nil, out)
+func (c *client) Put(ctx context.Context, path string, headers http.Header, body io.Reader, out interface{}) (*http.Response, error) {
+	return c.Request(ctx, http.MethodPut, path, headers, body, out)
 }
 
-func (c *client) Patch(ctx context.Context, path string, body io.Reader, out interface{}) (*http.Response, error) {
-	return c.Request(ctx, http.MethodPatch, path, body, nil, out)
+func (c *client) Patch(ctx context.Context, path string, headers http.Header, body io.Reader, out interface{}) (*http.Response, error) {
+	return c.Request(ctx, http.MethodPatch, path, headers, body, out)
 }
 
-func (c *client) Delete(ctx context.Context, path string, body io.Reader, out interface{}) (*http.Response, error) {
-	return c.Request(ctx, http.MethodDelete, path, body, nil, out)
+func (c *client) Delete(ctx context.Context, path string, headers http.Header, body io.Reader, out interface{}) (*http.Response, error) {
+	return c.Request(ctx, http.MethodDelete, path, headers, body, out)
 }
